@@ -85,8 +85,6 @@ public:
 	void activate(int i, int a) {
 		c_neuron[i].activation(a);
 	}
-
-	//void update(int, int*, int*);
 };
 
 class Axons : public Layer{
@@ -154,17 +152,11 @@ void recognition_test(Pattern<int> c_pattern, Layer c_layer, Axons c_axons) {
 		c_layer.activate(i, c_pattern.get_value(selectedPattern, i));
 		if (rand() % 100<errorPercentage) c_layer.activate(i, 1 - c_layer.get_a(i));
 		cout << c_layer.get_a(i);
-		c_layer_prev.activate(i, c_layer.get_a(i)); // initially prev state=current
+		c_layer_prev.activate(i, c_layer.get_a(i));
 	}
 	cout << endl << endl;
 
-	// if state of the network stays unchanged for ? steps
-	// that means the network is converged to an answer
-	// so then exit the loop and printout the last state
 	int ctr_unchg = 0;
-
-	// loop counter to ensure a stop just in case
-	// if the network becomes cyclic or chaotic
 	int ctr = 0;
 
 	while (select != 1 && select != 0) {
@@ -173,14 +165,10 @@ void recognition_test(Pattern<int> c_pattern, Layer c_layer, Axons c_axons) {
 		cout << endl;
 	}
 
-	while (ctr_unchg < 100 && ctr < 1000) // max 1000 loops allowed
+	while (ctr_unchg < 100 && ctr < 1000) 
 	{
 		if (!select) {
-			// First choice for updating the network
-			for (k = 0; k < size; k++) // update the whole network ?
-			{
-				// Serial-Random updating:
-				// Randomly select a neuron and update its value
+			for (k = 0; k < size; k++) 			{
 				j = rand() % size;
 				sum = 0;
 				for (i = 0; i < size; i++)
@@ -194,8 +182,6 @@ void recognition_test(Pattern<int> c_pattern, Layer c_layer, Axons c_axons) {
 		}
 		else {
 			Layer c_layer_temp(c_pattern);
-			// calculate the new values of each neuron
-			// but do not update immediately!
 			for (j = 0; j < size; j++)
 			{
 				sum = 0;
@@ -207,9 +193,7 @@ void recognition_test(Pattern<int> c_pattern, Layer c_layer, Axons c_axons) {
 				else
 					c_layer_temp.activate(j, 0);
 			}
-			// update the neurons with the new values
-			c_layer = c_layer_temp; // update the array pointer
-		   // delete the old values
+			c_layer = c_layer_temp;
 		};
 
 		bool changed = false;
@@ -224,7 +208,6 @@ void recognition_test(Pattern<int> c_pattern, Layer c_layer, Axons c_axons) {
 		else
 			ctr_unchg = 0;
 
-		// update the previous network state
 		for (k = 0; k < size; k++)
 			c_layer_prev.activate(k, c_layer.get_a(k));
 
@@ -238,8 +221,7 @@ void recognition_test(Pattern<int> c_pattern, Layer c_layer, Axons c_axons) {
 			cout << c_layer.get_a(i);
 		cout << endl << endl;
 
-		// calculate the convergence error percentage
-		int sumDif = 0; // total number of differences
+		int sumDif = 0;
 		for (i = 0; i < size; i++)
 			if (c_layer.get_a(i) != c_pattern.get_value(selectedPattern, i))
 				sumDif++;
@@ -256,28 +238,7 @@ void recognition_test(Pattern<int> c_pattern, Layer c_layer, Axons c_axons) {
 	}
 	else
 		cout << "Сеть не достигла заданного лимита конвергенции!" << endl;
-
-	// garbage collection
-	/*delete[]pattern;
-	delete[]w;
-	delete[]neuron;
-	delete[]neuron_prev;*/
 }
-
-//class Hopfield_layer : public layer {
-//	Hopfield_layer() : layer() {
-//	};
-//
-//	Hopfield_layer(int i_cols) : layer(i_cols) {
-//	};
-//};
-//
-//class Hopfield_neuron : public neuron {
-//public:
-//	Hopfield_neuron() : neuron() {
-//	};
-//};
-
 
 int main(int argc, char *argv[])
 {
@@ -288,7 +249,7 @@ int main(int argc, char *argv[])
 	int i_select = 1;
 
 	while (i_select) {
-		srand(time(NULL)); // use current time to seed random number generator
+		srand(time(NULL));
 
 		Pattern<int> c_pattern;
 		Layer c_layer(c_pattern);
